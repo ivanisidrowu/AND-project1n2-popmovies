@@ -7,7 +7,9 @@ https://www.themoviedb.org/documentation/api
 
 ## Configure your API key
 Add API key in build.gradle file which is in "app" directory.
-
+```
+buildConfigField STRING, "API_KEY", "\"${YOUR_APIKEY}\""
+```
 ## Open source libs I use in this project
 
 Retrofit https://github.com/square/retrofit
