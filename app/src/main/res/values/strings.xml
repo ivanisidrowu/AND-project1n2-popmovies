@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">PopularMovies</string>
+    <string name="action_settings">Settings</string>
+    <string name="image_size_url">w185/</string>
+    <string name="movie_detail_info">%2$s\n\nAverage vote: %1$s</string>
+    <string name="sort_by_poularity">Sort by popularity</string>
+    <string name="sort_by_rate">Sort by rate</string>
+</resources>
