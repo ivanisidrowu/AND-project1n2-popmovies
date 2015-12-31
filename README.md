@@ -24,6 +24,8 @@ Glide https://github.com/bumptech/glide
 
 Butterknife https://github.com/JakeWharton/butterknife
 
+EventBus https://github.com/greenrobot/EventBus
+
 ## Plugin
 Retrolamda https://github.com/evant/gradle-retrolambda
 
