@@ -11,4 +11,5 @@ import tw.invictus.popularmovies.model.pojo.Movie;
  */
 public interface MainView {
     void onMovieClicked(Movie movie);
+    void onLoadMoreMovies(List<Movie> movies);
 }

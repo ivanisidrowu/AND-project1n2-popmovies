@@ -15,7 +15,7 @@ android {
         versionName "1.0"
 
         def STRING = "String"
-        buildConfigField STRING, "API_KEY", "\"${YOUR_APIKEY}\""
+        buildConfigField STRING, "API_KEY", "\"${YOUR_API_KEY}\""
         buildConfigField STRING, "SERVER_URL", "\"http://api.themoviedb.org/3/\""
         buildConfigField STRING, "IMG_BASE_URL", "\"http://image.tmdb.org/t/p/\""
 
@@ -27,8 +27,8 @@ android {
         }
     }
     retrolambda {
-        jdk System.getenv("JAVA8_HOME")
-        oldJdk System.getenv("JAVA7_HOME")
+        jdk System.getenv('JAVA8_HOME')
+        oldJdk System.getenv('JAVA7_HOME')
         javaVersion JavaVersion.VERSION_1_7
         jvmArgs '-noverify'
         defaultMethods false
@@ -63,4 +63,5 @@ dependencies {
 
     compile 'com.github.bumptech.glide:glide:3.6.1'
 
+    compile 'de.greenrobot:eventbus:2.4.0'
 }

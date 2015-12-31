@@ -11,6 +11,6 @@ import tw.invictus.popularmovies.model.pojo.MoviesResponse;
 public interface RestfulApi {
 
     @GET("discover/movie")
-    Observable<MoviesResponse> getPopularMovies(@Query("sort_by") String sortBy, @Query("api_key") String apiKey);
+    Observable<MoviesResponse> getPopularMovies(@Query("sort_by") String sortBy, @Query("page") int page, @Query("api_key") String apiKey);
 
 }

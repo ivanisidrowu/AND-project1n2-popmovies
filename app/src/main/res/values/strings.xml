@@ -5,4 +5,5 @@
     <string name="movie_detail_info">%2$s\n\nAverage vote: %1$s</string>
     <string name="sort_by_poularity">Sort by popularity</string>
     <string name="sort_by_rate">Sort by rate</string>
+    <string name="no_network_connection">No network connection! Please connect it!</string>
 </resources>

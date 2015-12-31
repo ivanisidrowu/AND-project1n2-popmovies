@@ -12,19 +12,28 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.greenrobot.event.EventBus;
 import tw.invictus.popularmovies.MovieApplication;
 import tw.invictus.popularmovies.R;
 import tw.invictus.popularmovies.model.api.RestfulApi;
 import tw.invictus.popularmovies.model.pojo.Movie;
 import tw.invictus.popularmovies.presenter.MainPresenter;
+import tw.invictus.popularmovies.util.DialogUtil;
+import tw.invictus.popularmovies.util.NetworkUtil;
+import tw.invictus.popularmovies.view.adapter.MainRecyclerViewAdapter;
+import tw.invictus.popularmovies.view.event.NetworkChangeEvent;
+import tw.invictus.popularmovies.view.listener.InfiniteRecyclerViewScrollListener;
 
 public class MainActivity extends AppCompatActivity implements MainView, PopupMenu.OnMenuItemClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -44,10 +53,11 @@ public class MainActivity extends AppCompatActivity implements MainView, PopupMe
         setContentView(R.layout.activity_main);
         ((MovieApplication) getApplication()).getMainActivityComponent(this).inject(this);
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         initRecyclerView();
         initPresenter();
         setSupportActionBar(toolbar);
-        presenter.loadMovies(MainPresenter.SORT_BY_POPULARITY);
+        presenter.loadMovies(MainPresenter.SORT_BY_POPULARITY, MainPresenter.START_PAGE_INDEX);
     }
 
     @Override
@@ -83,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements MainView, PopupMe
     protected void onDestroy() {
         super.onDestroy();
         presenter.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -100,6 +111,12 @@ public class MainActivity extends AppCompatActivity implements MainView, PopupMe
     private void initRecyclerView(){
         GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(layoutManager);
+        recyclerView.addOnScrollListener(new InfiniteRecyclerViewScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                presenter.loadMovies(page);
+            }
+        });
     }
 
     public void onSortButtonClicked(View view){
@@ -117,17 +134,37 @@ public class MainActivity extends AppCompatActivity implements MainView, PopupMe
     }
 
     @Override
+    public void onLoadMoreMovies(List<Movie> movies) {
+        Log.d(TAG, "onLoadMoreMovies");
+        int currentSize = recyclerView.getAdapter().getItemCount();
+        List<Movie> currentMovies = ((MainRecyclerViewAdapter) recyclerView.getAdapter()).getMovies();
+        currentMovies.addAll(movies);
+        recyclerView.getAdapter().notifyItemRangeInserted(currentSize, currentMovies.size() - 1);
+    }
+
+    @Override
     public boolean onMenuItemClick(MenuItem item) {
         int id = item.getItemId();
         switch (id){
             case R.id.popular:
-                presenter.loadMovies(MainPresenter.SORT_BY_POPULARITY);
+                presenter.loadMovies(MainPresenter.SORT_BY_POPULARITY, MainPresenter.START_PAGE_INDEX);
                 break;
             case R.id.highest_rated:
-                presenter.loadMovies(MainPresenter.SORT_BY_RATES);
+                presenter.loadMovies(MainPresenter.SORT_BY_RATES, MainPresenter.START_PAGE_INDEX);
                 break;
         }
         return false;
+    }
+
+    @SuppressWarnings("unused")
+    public void onEvent(NetworkChangeEvent event){
+        int status = event.getNetworkStatus();
+        if(status == NetworkUtil.CONNECTED){
+            presenter.loadMovies(MainPresenter.SORT_BY_POPULARITY, MainPresenter.START_PAGE_INDEX);
+        }else{
+            String message = getResources().getString(R.string.no_network_connection);
+            DialogUtil.getAlertDialog(this, "", message).show();
+        }
     }
 
 }

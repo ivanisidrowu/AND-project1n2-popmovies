@@ -1,0 +1,27 @@
+package tw.invictus.popularmovies.util;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
+/**
+ * Created by ivan.wu on 12/31/2015.
+ */
+public class NetworkUtil {
+
+    public static int NOT_CONNECTED = 0;
+    public static int CONNECTED = 1;
+
+
+    public static int getConnectivityStatus(Context context) {
+        int result = NOT_CONNECTED;
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null) {
+            result = CONNECTED;
+        }
+
+        return result;
+    }
+
+}
