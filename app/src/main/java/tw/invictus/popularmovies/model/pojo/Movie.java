@@ -57,6 +57,26 @@ public class Movie implements Parcelable {
     @Expose
     private Integer voteCount;
 
+    public Movie(Integer id, String title, String overview) {
+        this.id = id;
+        this.title = title;
+        this.overview = overview;
+    }
+
+    public Movie(Boolean adult, String backdropPath, Integer id, String overview, String releaseDate, String posterPath, Double popularity, String title, Boolean video, Double voteAverage, Integer voteCount) {
+        this.adult = adult;
+        this.backdropPath = backdropPath;
+        this.id = id;
+        this.overview = overview;
+        this.releaseDate = releaseDate;
+        this.posterPath = posterPath;
+        this.popularity = popularity;
+        this.title = title;
+        this.video = video;
+        this.voteAverage = voteAverage;
+        this.voteCount = voteCount;
+    }
+
     public Boolean getAdult() {
         return adult;
     }

@@ -1,8 +1,8 @@
 package tw.invictus.popularmovies.view.adapter;
 
+import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
@@ -28,10 +29,10 @@ import tw.invictus.popularmovies.view.MainView;
  */
 public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerViewAdapter.ViewHolder> {
     private static final String TAG = MainRecyclerViewAdapter.class.getSimpleName();
-    static List<Movie> movies;
+    private ArrayList<Movie> movies;
     private MainView mainView;
 
-    public MainRecyclerViewAdapter(List<Movie> movies, MainView mainView) {
+    public MainRecyclerViewAdapter(ArrayList<Movie> movies, MainView mainView) {
         this.movies = movies;
         this.mainView = mainView;
     }
@@ -39,7 +40,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rootView = LayoutInflater.from(parent.getContext()).inflate(R.layout.movie_list_item, parent, false);
-        return new ViewHolder(rootView, mainView);
+        return new ViewHolder(rootView, mainView, movies);
     }
 
     @Override
@@ -47,11 +48,13 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
         Movie movie = movies.get(position);
         String imageUrl = BuildConfig.IMG_BASE_URL + holder.imageSizeUrl + movie.getPosterPath();
         String title = movie.getTitle();
-        holder.textView.setText(title);
+        if(holder.textView != null){
+            holder.textView.setText(title);
+        }
         Glide.with(holder.poster.getContext()).load(imageUrl).diskCacheStrategy(DiskCacheStrategy.ALL).into(holder.poster);
     }
 
-    public List<Movie> getMovies() {
+    public ArrayList<Movie> getMovies() {
         return movies;
     }
 
@@ -64,6 +67,7 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
 
         @Bind(R.id.poster)
         ImageView poster;
+        @Nullable
         @Bind(R.id.card_text)
         TextView textView;
         @Bind(R.id.card_view)
@@ -73,11 +77,13 @@ public class MainRecyclerViewAdapter extends RecyclerView.Adapter<MainRecyclerVi
 
         View itemView;
         MainView mainView;
+        List<Movie> movies;
 
-        public ViewHolder(View itemView, MainView mainView) {
+        public ViewHolder(View itemView, MainView mainView, List<Movie> movies) {
             super(itemView);
             this.itemView = itemView;
             this.mainView = mainView;
+            this.movies = movies;
             ButterKnife.bind(this, itemView);
         }
 

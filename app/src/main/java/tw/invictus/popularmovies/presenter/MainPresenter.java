@@ -1,25 +1,23 @@
 package tw.invictus.popularmovies.presenter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
-import tw.invictus.popularmovies.BuildConfig;
 import tw.invictus.popularmovies.R;
 import tw.invictus.popularmovies.model.api.RestfulApi;
+import tw.invictus.popularmovies.model.db.RealmService;
 import tw.invictus.popularmovies.model.pojo.Movie;
 import tw.invictus.popularmovies.model.pojo.MoviesResponse;
 import tw.invictus.popularmovies.util.DialogUtil;
 import tw.invictus.popularmovies.util.NetworkUtil;
 import tw.invictus.popularmovies.view.MainView;
-import tw.invictus.popularmovies.view.adapter.MainRecyclerViewAdapter;
 
 /**
  * Created by ivan on 12/26/15.
@@ -29,12 +27,13 @@ public class MainPresenter implements BasePresenter {
     public static final int START_PAGE_INDEX = 0;
     public static final String SORT_BY_POPULARITY = "popularity.desc";
     public static final String SORT_BY_RATES = "vote_average.desc";
+    public static final String LIST_MY_FAVORITES = "favorites";
 
     private Context context;
     private MainView mainView;
     private Subscription subscription;
     private RestfulApi api;
-    private RecyclerView recyclerView;
+    private RealmService realmService;
     private String currentSortParam = SORT_BY_POPULARITY;
 
     @Inject
@@ -50,18 +49,26 @@ public class MainPresenter implements BasePresenter {
         this.mainView = mainView;
     }
 
+    public void setRealmService(RealmService realmService) {
+        this.realmService = realmService;
+    }
+
     public void loadMovies(String sortParam, int page) {
         this.currentSortParam = sortParam;
-        loadMovies(page);
+
+        if(sortParam == LIST_MY_FAVORITES){
+            loadMoviesFromDb();
+        }else{
+            loadMovies(page);
+        }
     }
 
     public void loadMovies(int page) {
-        if (isOnline()) {
-            subscription = api.getPopularMovies(currentSortParam, page + 1, BuildConfig.API_KEY)
+        if (NetworkUtil.isOnline(context)) {
+            subscription = api.getPopularMovies(currentSortParam, page + 1)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnError(e -> Log.e(TAG, "loadMovies: ", e))
-                    .doOnCompleted(() -> Log.d(TAG, "loadMovies: completed"))
                     .subscribe(response -> processMovieResponse(response, page));
         }else{
             String message = context.getResources().getString(R.string.no_network_connection);
@@ -69,18 +76,31 @@ public class MainPresenter implements BasePresenter {
         }
     }
 
-    private boolean isOnline() {
-        int status = NetworkUtil.getConnectivityStatus(context);
-        return (status == NetworkUtil.CONNECTED) ? true : false;
+    public void loadMoviesFromDb(){
+        Log.d(TAG, "loadMoviesFromDb");
+        currentSortParam = LIST_MY_FAVORITES;
+        subscription = realmService
+                .getAllMovies()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(movies -> mainView.onMoviesLoaded(movies));
     }
 
     private void processMovieResponse(MoviesResponse response, int page) {
-        List<Movie> movies = response.getResults();
+        ArrayList<Movie> movies = response.getResults();
+        Log.d(TAG, "processMovieResponse: page" + Integer.toString(page));
         if(page == START_PAGE_INDEX){
-            recyclerView.setAdapter(new MainRecyclerViewAdapter(movies, mainView));
+            mainView.onMoviesLoaded(movies);
         }else{
-            mainView.onLoadMoreMovies(movies);
+            mainView.onMoreMoviesLoaded(movies);
         }
+    }
+
+    public String getCurrentSortParam() {
+        return currentSortParam;
+    }
+
+    public void setCurrentSortParam(String currentSortParam) {
+        this.currentSortParam = currentSortParam;
     }
 
     @Override
@@ -90,12 +110,14 @@ public class MainPresenter implements BasePresenter {
 
     @Override
     public void onPause() {
-        subscription.unsubscribe();
+
     }
 
     @Override
     public void onDestroy() {
-        subscription.unsubscribe();
+        if(subscription != null){
+            subscription.unsubscribe();
+        }
     }
 
     @Override
@@ -103,7 +125,4 @@ public class MainPresenter implements BasePresenter {
 
     }
 
-    public void setRecyclerView(RecyclerView recyclerView) {
-        this.recyclerView = recyclerView;
-    }
 }

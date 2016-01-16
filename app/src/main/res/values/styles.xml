@@ -17,4 +17,8 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="share_icon_visibility">
+        <item name="android:visible">false</item>
+    </style>
+
 </resources>

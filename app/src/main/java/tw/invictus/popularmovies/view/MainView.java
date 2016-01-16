@@ -1,8 +1,6 @@
 package tw.invictus.popularmovies.view;
 
-import android.view.View;
-
-import java.util.List;
+import java.util.ArrayList;
 
 import tw.invictus.popularmovies.model.pojo.Movie;
 
@@ -11,5 +9,6 @@ import tw.invictus.popularmovies.model.pojo.Movie;
  */
 public interface MainView {
     void onMovieClicked(Movie movie);
-    void onLoadMoreMovies(List<Movie> movies);
+    void onMoreMoviesLoaded(ArrayList<Movie> movies);
+    void onMoviesLoaded(ArrayList<Movie> movies);
 }

@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by ivan on 12/26/15.
@@ -15,7 +14,7 @@ public class MoviesResponse {
     private Integer page;
     @SerializedName("results")
     @Expose
-    private List<Movie> results = new ArrayList<Movie>();
+    private ArrayList<Movie> results = new ArrayList<Movie>();
     @SerializedName("total_pages")
     @Expose
     private Integer totalPages;
@@ -31,11 +30,11 @@ public class MoviesResponse {
         this.page = page;
     }
 
-    public List<Movie> getResults() {
+    public ArrayList<Movie> getResults() {
         return results;
     }
 
-    public void setResults(List<Movie> results) {
+    public void setResults(ArrayList<Movie> results) {
         this.results = results;
     }
 

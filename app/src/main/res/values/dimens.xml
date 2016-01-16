@@ -8,10 +8,14 @@
     <dimen name="card_corner_radius">2dp</dimen>
     <dimen name="activity_detail_poster_width">150dp</dimen>
     <dimen name="activity_detail_info_text_size">20sp</dimen>
-    <dimen name="activity_detail_overview_text_size">20sp</dimen>
+    <dimen name="activity_detail_text_size">20sp</dimen>
+    <dimen name="activity_detail_subtitle_text_size">30sp</dimen>
     <dimen name="activity_detail_view_margin">5dp</dimen>
     <dimen name="activity_detail_backdrop_height">206dip</dimen>
     <dimen name="activity_detail_title_bottom_margin">20dp</dimen>
     <dimen name="activity_detail_title_end_margin">64dp</dimen>
     <dimen name="activity_detail_title_start_margin">48dp</dimen>
+    <dimen name="activity_detail_divider_size">1dp</dimen>
+    <dimen name="activity_detail_play_size">50dp</dimen>
+    <integer name="activity_movie_column">2</integer>
 </resources>

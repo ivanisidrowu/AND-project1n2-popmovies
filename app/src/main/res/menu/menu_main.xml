@@ -6,7 +6,14 @@
         android:id="@+id/sort"
         android:orderInCategory="100"
         android:title="@string/sort_by_poularity"
-        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:icon="@drawable/ic_sort"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/share"
+        android:orderInCategory="200"
+        android:title="@string/share"
+        android:icon="@drawable/ic_share"
+        style="@style/share_icon_visibility"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_settings"
