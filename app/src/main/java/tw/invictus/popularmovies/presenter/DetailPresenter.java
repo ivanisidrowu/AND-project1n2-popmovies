@@ -2,14 +2,12 @@ package tw.invictus.popularmovies.presenter;
 
 import android.content.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 import tw.invictus.popularmovies.model.api.RestfulApi;
 import tw.invictus.popularmovies.model.db.RealmService;
 import tw.invictus.popularmovies.model.pojo.Movie;
@@ -26,7 +24,7 @@ public class DetailPresenter implements BasePresenter {
     private Context context;
     private RestfulApi api;
     private RealmService realmService;
-    private List<Subscription> subscriptions = new ArrayList<>();
+    private CompositeSubscription compositeSubscription = new CompositeSubscription();
 
     @Inject
     public DetailPresenter(Context context) {
@@ -50,7 +48,7 @@ public class DetailPresenter implements BasePresenter {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(videoResponse -> detailView.onVideosLoaded(videoResponse.getResults()));
-        subscriptions.add(subscription);
+        compositeSubscription.add(subscription);
     }
 
     public void loadReviews(int id){
@@ -58,17 +56,11 @@ public class DetailPresenter implements BasePresenter {
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(reviewResponse -> detailView.onReviewsLoaded(reviewResponse.getResults()));
-        subscriptions.add(subscription);
+        compositeSubscription.add(subscription);
     }
 
     private void cleanSubscriptions(){
-        for (int i = 0; i < subscriptions.size(); i++) {
-            Subscription subscription = subscriptions.get(i);
-            if (subscription != null){
-                subscription.unsubscribe();
-            }
-        }
-        subscriptions.clear();
+        compositeSubscription.clear();
     }
 
     public void addMovie(Movie movie){
@@ -78,7 +70,7 @@ public class DetailPresenter implements BasePresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnCompleted(() -> detailView.onMovieAdded())
                 .subscribe();
-        subscriptions.add(subscription);
+        compositeSubscription.add(subscription);
     }
 
 
@@ -89,7 +81,7 @@ public class DetailPresenter implements BasePresenter {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnCompleted(() -> detailView.onMovieDeleted())
                 .subscribe();
-        subscriptions.add(subscription);
+        compositeSubscription.add(subscription);
     }
 
     public boolean isMovieAdded(int id){
